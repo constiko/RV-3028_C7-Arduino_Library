@@ -28,20 +28,23 @@ void setup() {
   }
   else
     Serial.println("RTC online!");
-  Serial.println();
+    Serial.println();
 
   //Trickle Charger
-  Serial.print("Config EEPROM 0x37 before: ");
-  Serial.println(rtc.readConfigEEPROM_RAMmirror(0x37));
+  rtc.disableTrickleCharge();         // disable trickle charger
+  Serial.print("Config EEPROM 0x37 before:\t0b");
+  Serial.println(rtc.readConfigEEPROM_RAMmirror(0x37), BIN);
+ 
 
-  rtc.enableTrickleCharge(TCR_3K);   //series resistor 3kOhm
-  //rtc.enableTrickleCharge(TCR_5K); //series resistor 5kOhm
-  //rtc.enableTrickleCharge(TCR_9K); //series resistor 9kOhm
+  rtc.enableTrickleCharge(TCR_3K);    //series resistor 3kOhm
+  //rtc.enableTrickleCharge(TCR_5K);  //series resistor 5kOhm
+  //rtc.enableTrickleCharge(TCR_9K);  //series resistor 9kOhm
   //rtc.enableTrickleCharge(TCR_15K); //series resistor 15kOhm
-  //rtc.disableTrickleCharge(); //Trickle Charger disabled
+  //rtc.disableTrickleCharge();       //Trickle Charger disabled
 
-  Serial.print("Config EEPROM 0x37 after: ");
-  Serial.println(rtc.readConfigEEPROM_RAMmirror(0x37));
+  Serial.print("Config EEPROM 0x37 after:\t0b");
+  Serial.println(rtc.readConfigEEPROM_RAMmirror(0x37), BIN);
+  Serial.println("\t\t(1 = ON) TCE_bit    ^\t^^ TCR_bits (00 = 3k series resistor)");
 
   //For more information see https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-3028-C7_App-Manual.pdf#page=48
 }
