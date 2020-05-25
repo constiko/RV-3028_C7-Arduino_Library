@@ -68,7 +68,8 @@ RV3028::RV3028(void)
 {
 
 }
-
+// This call overwrites EEPROM settings. Caller should be able to construct class without 
+// overwriting EEPROM. Especially when they don't know the current EEPROM settings.
 bool RV3028::begin(TwoWire &wirePort, bool set_24Hour, bool disable_TrickleCharge, bool set_LevelSwitchingMode)
 {
 	//We require caller to begin their I2C port, with the speed of their choice

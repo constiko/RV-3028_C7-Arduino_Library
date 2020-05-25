@@ -202,7 +202,8 @@ class RV3028
 public:
 
 	RV3028(void);
-
+	// This call overwrites EEPROM settings. Caller should be able to construct class without 
+	// overwriting EEPROM. Especially when they don't know the current EEPROM settings.
 	bool begin(TwoWire &wirePort = Wire, bool set_24Hour = true, bool disable_TrickleCharge = true, bool set_LevelSwitchingMode = true);
 
 	bool setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t weekday, uint8_t date, uint8_t month, uint16_t year);
