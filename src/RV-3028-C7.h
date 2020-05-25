@@ -106,12 +106,12 @@ Distributed as-is; no warranty is given.
 
 //Bits in Status Register
 #define STATUS_EEBUSY	7
-#define STATUS_CLKF		6
-#define STATUS_BSF		5
-#define STATUS_UF		4
-#define STATUS_TF		3
-#define STATUS_AF		2
-#define STATUS_EVF		1
+#define STATUS_CLKF		6		// clock output interrupt flag
+#define STATUS_BSF		5		// backup switch flag
+#define STATUS_UF		4		// periodic time update flag
+#define STATUS_TF		3		// periodic countdown timer flag
+#define STATUS_AF		2		// alarm flag
+#define STATUS_EVF		1		// event flag
 #define STATUS_PORF		0
 
 //Bits in Control1 Register
@@ -124,7 +124,7 @@ Distributed as-is; no warranty is given.
 #define CTRL1_TD0		0
 
 //Bits in Control2 Register
-#define CTRL2_TSE		7
+#define CTRL2_TSE		7			// Time Stamp Enable bit
 #define CTRL2_CLKIE		6
 #define CTRL2_UIE		5
 #define CTRL2_TIE		4
@@ -149,6 +149,7 @@ Distributed as-is; no warranty is given.
 #define EEPROMCMD_ReadSingle			0x22
 
 //Bits in EEPROM Backup Register
+#define EEPROMBackup_BSIE_BIT			6				//Backup Switchover Interrupt Enable bit
 #define EEPROMBackup_TCE_BIT			5				//Trickle Charge Enable Bit
 #define EEPROMBackup_FEDE_BIT			4				//Fast Edge Detection Enable Bit (for Backup Switchover Mode)
 #define EEPROMBackup_BSM_SHIFT			2				//Backup Switchover Mode shift
@@ -179,11 +180,18 @@ Distributed as-is; no warranty is given.
 #define FD_CLKOUT_LOW					  0b111 			//CLKOUT = LOW 
 
 
-#define IMT_MASK_CEIE					3				//Clock output when Event Interrupt bit. 
-#define IMT_MASK_CAIE					2				//Clock output when Alarm Interrupt bit.
-#define IMT_MASK_CTIE					1				//Clock output when Periodic Countdown Timer Interrupt bit.
-#define IMT_MASK_CUIE					0				//Clock output when Periodic Time Update Interrupt bit.
+#define IMT_MASK_CEIE					3				//Clock output when Event Interrupt bit
+#define IMT_MASK_CAIE					2				//Clock output when Alarm Interrupt bit
+#define IMT_MASK_CTIE					1				//Clock output when Periodic Countdown Timer Interrupt bit
+#define IMT_MASK_CUIE					0				//Clock output when Periodic Time Update Interrupt bit
 
+// Event control register (0x13)
+// bit 7 not implimented
+#define ECR_EHL							6				//Event High/Low Level
+// bit 3 not implimented
+#define ECR_TSR							2				//Time Stamp Reset bit
+#define ECR_TSOW						1				//Time Stamp Overwrite bit, 0 = first event, 1 = last event
+#define ECR_TSS							0				//Time Stamp Source Selection bit
 
 #define TIME_ARRAY_LENGTH 7 // Total number of writable values in device
 
@@ -197,13 +205,28 @@ enum time_order {
 	TIME_YEAR,       // 6
 };
 
+enum timeStampSource {
+	externalPin = 0, 
+	backupBattery = 1
+};
+
+enum timeStampStore {
+	firstEvent = 0,
+	lastEvent = 1,
+};
+
+enum clockOutputOnEvent {
+	clockOff = 0,
+	clockOn = 1,
+};
+
 class RV3028
 {
 public:
 
 	RV3028(void);
 
-	bool begin(TwoWire &wirePort = Wire, bool set_24Hour = true, bool disable_TrickleCharge = true, bool set_LevelSwitchingMode = true);
+	bool begin(TwoWire &wirePort = Wire, bool set_24Hour = true, bool disable_TrickleCharge = false, bool set_LevelSwitchingMode = true);
 
 	bool setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t weekday, uint8_t date, uint8_t month, uint16_t year);
 	bool setTime(uint8_t * time, uint8_t len);
@@ -268,6 +291,12 @@ public:
 	void disableClockOut();
 	bool readClockOutputInterruptFlag();
 	void clearClockOutputInterruptFlag();
+
+	// Interrupt Time Stamp Functions
+	void enableInterruptTimeStamp(timeStampSource TSS, timeStampStore TSOW, clockOutputOnEvent CEIE);
+	void disableInterruptTimeStamp();			// default
+	bool getInterruptTimeStampSetting();
+	bool readInterruptTimeStamp();
 
 	uint8_t status(); //Returns the status byte
 	void clearInterrupts();

@@ -637,7 +637,7 @@ void RV3028::enableTrickleCharge(uint8_t tcr)
 	writeConfigEEPROM_RAMmirror(EEPROM_Backup_Register, EEPROMBackup);
 }
 
-void RV3028::disableTrickleCharge()
+void RV3028::disableTrickleCharge() // does not clear trickle charge resistor setting
 {
 	//Read EEPROM Backup Register (0x37)
 	uint8_t EEPROMBackup = readConfigEEPROM_RAMmirror(EEPROM_Backup_Register);
@@ -727,6 +727,61 @@ void RV3028::clearClockOutputInterruptFlag()
 	clearBit(RV3028_STATUS, STATUS_CLKF);
 }
 
+// interrupt time stamp functions
+// step by step as described in data sheet
+// https://www.microcrystal.com/fileadmin/Media/Products/RTC/App.Manual/RV-3028-C7_App-Manual.pdf#page=76
+void RV3028::enableInterruptTimeStamp(timeStampSource TSS, timeStampStore TSOW, clockOutputOnEvent CEIE) { 				
+	clearBit(RV3028_CTRL2, CTRL2_TSE);				// clear Time Stamp Enable bit
+	clearBit(EEPROM_Backup_Register, 
+				EEPROMBackup_BSIE_BIT); 			// clear Backup Switchover Interrupt Enable bit
+	clearBit(RV3028_STATUS, STATUS_BSF);			// clear Backup Switch Flag
+
+	if (TSS == backupBattery) {
+		setBit(RV3028_EVENTCTRL, ECR_TSS);			// select battery switch over as Time Stamp Source
+	} else if (TSS == externalPin) {
+		clearBit(RV3028_EVENTCTRL, ECR_TSS);		// select external pin as Time Stamp Source
+	}
+
+	if (TSOW == lastEvent) {
+		setBit(RV3028_EVENTCTRL, ECR_TSOW);			// stores time stamp of last event
+	} else if (TSOW == firstEvent) {
+		clearBit(RV3028_EVENTCTRL, ECR_TSOW);		// stores time stamp of first event
+	}
+	
+	setBit(RV3028_EVENTCTRL, ECR_TSR);				// reset Time Stamp Register
+
+	if (CEIE == clockOn) {
+		setBit(RV3028_INT_MASK, IMT_MASK_CEIE);		// Clock output on when Event Interrupt bit
+	} else if (CEIE == clockOff) {
+		clearBit(RV3028_INT_MASK, IMT_MASK_CEIE);	// Clock output off when Event Interrupt bit
+	}
+	
+	setBit(RV3028_CTRL2, CTRL2_TSE);				// set Time Stamp Enable bit
+	setBit(EEPROM_Backup_Register, 
+				EEPROMBackup_BSIE_BIT);				// set Backup Switchover Interrupt Enable bit
+}
+
+bool RV3028::getInterruptTimeStampSetting() {
+	return readBit(RV3028_CTRL2, CTRL2_TSE);
+}
+
+void RV3028::disableInterruptTimeStamp () {
+	clearBit(RV3028_CTRL2, CTRL2_TSE);			// clear Time Stamp Enable bit
+}
+
+bool RV3028::readInterruptTimeStamp() {			// reusing updateTime() function 
+	if (readMultipleRegisters(RV3028_SECONDS_TS, _time, TIME_ARRAY_LENGTH) == false)
+		return(false); 							//Something went wrong
+
+	if (is12Hour()) _time[TIME_HOURS] &= ~(1 << HOURS_AM_PM); //Remove this bit from value
+
+	//shift values in array to account for the missing weekday register.
+	_time[6] = _time[5];
+	_time[5] = _time[4];
+	_time[4] = _time[3];
+	_time[3] = 99; 
+	return true;
+}
 
 //Returns the status byte
 uint8_t RV3028::status(void)
