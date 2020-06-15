@@ -785,6 +785,15 @@ bool RV3028::readInterruptTimeStamp() {			// reusing updateTime() function
 	return true;
 }
 
+uint8_t RV3028::readNumberOfInterrupts(void) {
+	return(readRegister(RV3028_COUNT_TS));
+}
+
+void RV3028::clearTimeStampRegister()
+{
+	setBit(RV3028_EVENTCTRL, ECR_TSR);
+}
+
 //Returns the status byte
 uint8_t RV3028::status(void)
 {

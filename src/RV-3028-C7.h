@@ -296,9 +296,11 @@ public:
 
 	// Interrupt Time Stamp Functions
 	void enableInterruptTimeStamp(timeStampSource TSS, timeStampStore TSOW, clockOutputOnEvent CEIE);
-	void disableInterruptTimeStamp();			// default
+	void disableInterruptTimeStamp();			
 	bool isInterruptTimeStampEnabled();
 	bool readInterruptTimeStamp();
+	uint8_t readNumberOfInterrupts();
+	void clearTimeStampRegister();
 
 	uint8_t status(); //Returns the status byte
 	void clearInterrupts();
