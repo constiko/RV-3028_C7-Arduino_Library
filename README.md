@@ -136,6 +136,7 @@ _every_second_ specifies the interrupt to occur either every second or every min
 ### Trickle Charge functions
 ###### `enableTrickleCharge(uint8_t tcr = TCR_15K)`
 ###### `disableTrickleCharge()`
+###### `bool isTrickleChargeEnabled()`
 At "enableTrickleCharge" you can choose the series resistor:  
 TCR_3K for 3kOhm  
 TCR_5K for 5kOhm  
