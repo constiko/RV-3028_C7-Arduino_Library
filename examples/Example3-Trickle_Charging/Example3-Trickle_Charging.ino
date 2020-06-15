@@ -54,7 +54,7 @@ void setup() {
 
 void loop() {
 
-  Serial.print("TSE bit = ");
+  Serial.print("TCE bit = ");
   Serial.println(rtc.isTrickleChargeEnabled());
   for(;;);
 
