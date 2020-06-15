@@ -284,6 +284,8 @@ public:
 
 	void enableTrickleCharge(uint8_t tcr = TCR_15K); //Trickle Charge Resistor default 15k
 	void disableTrickleCharge();
+	bool isTrickleChargeEnabled ();
+
 	bool setBackupSwitchoverMode(uint8_t val);
 
 	void enableClockOut(uint8_t freq);
@@ -295,7 +297,7 @@ public:
 	// Interrupt Time Stamp Functions
 	void enableInterruptTimeStamp(timeStampSource TSS, timeStampStore TSOW, clockOutputOnEvent CEIE);
 	void disableInterruptTimeStamp();			// default
-	bool getInterruptTimeStampSetting();
+	bool isInterruptTimeStampEnabled();
 	bool readInterruptTimeStamp();
 
 	uint8_t status(); //Returns the status byte

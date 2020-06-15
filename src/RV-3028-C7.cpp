@@ -66,7 +66,6 @@ BUILD_MONTH_OCT | BUILD_MONTH_NOV | BUILD_MONTH_DEC
 
 RV3028::RV3028(void)
 {
-
 }
 
 bool RV3028::begin(TwoWire &wirePort, bool set_24Hour, bool disable_TrickleCharge, bool set_LevelSwitchingMode)
@@ -523,7 +522,6 @@ void RV3028::setTimer(bool timer_repeat, uint16_t timer_frequency, uint16_t time
 	case 60000:		// 1/60Hz				// up to 7.813ms error on first time
 		ctrl1_val |= 3; // Set both bits
 		break;
-
 	}
 
 	if (set_interrupt)
@@ -647,6 +645,10 @@ void RV3028::disableTrickleCharge() // does not clear trickle charge resistor se
 	writeConfigEEPROM_RAMmirror(EEPROM_Backup_Register, EEPROMBackup);
 }
 
+bool RV3028::isTrickleChargeEnabled ()
+{
+	return readBit(EEPROM_Backup_Register, EEPROMBackup_TCE_BIT);
+}
 
 /*********************************
 0 = Switchover disabled
@@ -761,7 +763,7 @@ void RV3028::enableInterruptTimeStamp(timeStampSource TSS, timeStampStore TSOW, 
 				EEPROMBackup_BSIE_BIT);				// set Backup Switchover Interrupt Enable bit
 }
 
-bool RV3028::getInterruptTimeStampSetting() {
+bool RV3028::isInterruptTimeStampEnabled() {
 	return readBit(RV3028_CTRL2, CTRL2_TSE);
 }
 
@@ -950,6 +952,5 @@ bool RV3028::readBit(uint8_t reg_addr, uint8_t bit_num)
 	uint8_t value = readRegister(reg_addr);
 	value &= (1 << bit_num);
 	return value;
-
 }
 
