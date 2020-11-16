@@ -647,6 +647,11 @@ void RV3028::disableTrickleCharge()
 	writeConfigEEPROM_RAMmirror(EEPROM_Backup_Register, EEPROMBackup);
 }
 
+bool RV3028::isTrickleChargeEnabled()
+{
+	return readBit(EEPROM_Backup_Register, EEPROMBackup_TCE_BIT);
+}
+
 
 /*********************************
 0 = Switchover disabled

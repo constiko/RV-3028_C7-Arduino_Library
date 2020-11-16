@@ -261,6 +261,7 @@ public:
 
 	void enableTrickleCharge(uint8_t tcr = TCR_15K); //Trickle Charge Resistor default 15k
 	void disableTrickleCharge();
+	bool isTrickleChargeEnabled();
 	bool setBackupSwitchoverMode(uint8_t val);
 
 	void enableClockOut(uint8_t freq);
