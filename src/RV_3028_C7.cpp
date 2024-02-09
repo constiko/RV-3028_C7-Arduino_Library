@@ -16,7 +16,7 @@ Distributed as-is; no warranty is given.
 
 #define debug3028z
 
-#include "RV_3028_C7.h"
+#include "RV-3028=C7.h"
 
 //****************************************************************************//
 //
