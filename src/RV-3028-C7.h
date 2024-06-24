@@ -197,6 +197,13 @@ enum time_order {
 	TIME_YEAR,       // 6
 };
 
+enum class TimerClockFrequency : uint8_t {
+        Hz4096 = 0x00,
+        Hz64 = 0x01,
+        Hz1 = 0x02,
+        Hz1_60 = 0x03
+};
+
 class RV3028
 {
 public:
@@ -246,7 +253,7 @@ public:
 	bool readAlarmInterruptFlag();
 	void clearAlarmInterruptFlag();
 
-	void setTimer(bool timer_repeat, uint16_t timer_frequency, uint16_t timer_value, bool setInterrupt, bool start_timer, bool enable_clock_output = false);
+	void setTimer(bool timer_repeat, TimerClockFrequency timer_frequency, uint16_t timer_value, bool setInterrupt, bool start_timer, bool enable_clock_output = false);
 	void enableTimer();
 	void disableTimer();
 	void enableTimerInterrupt();
