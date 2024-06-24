@@ -79,6 +79,7 @@ bool RV3028::begin(TwoWire &wirePort, bool set_24Hour, bool disable_TrickleCharg
 	delay(1);
 	if (set_24Hour) { set24Hour(); delay(1); }
 	if (disable_TrickleCharge) { disableTrickleCharge(); delay(1); }
+	timeUpdateRequired = readBit(RV3028_STATUS, STATUS_PORF);
 
 	return((set_LevelSwitchingMode ? setBackupSwitchoverMode(3) : true) && (reset_Status ? writeRegister(RV3028_STATUS, 0x00) : true));
 }

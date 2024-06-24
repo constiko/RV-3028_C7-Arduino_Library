@@ -291,6 +291,7 @@ public:
 	void setBit(uint8_t reg_addr, uint8_t bit_num);
 	void clearBit(uint8_t reg_addr, uint8_t bit_num);
 	bool readBit(uint8_t reg_addr, uint8_t bit_num);
+	bool timeUpdateRequired = true;
 private:
 	uint8_t _time[TIME_ARRAY_LENGTH];
 	TwoWire *_i2cPort;
